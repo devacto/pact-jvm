@@ -4,8 +4,27 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'clojuresque:clojuresque:1.7.0'
+        classpath 'clojuresque:clojuresque:1.7.0', 'clojuresque:clojuresque-nrepl:1.1.0'
     }
 }
 
 apply plugin: 'clojure'
+apply plugin: 'clojure-nrepl'
+
+clojure {
+    warnOnReflection = true
+    aotCompile = true
+}
+
+clojureRepl {
+    port = '7777'
+}
+
+repositories {
+    maven { url 'http://clojars.org/repo' }
+}
+
+dependencies {
+    compile project(":pact-jvm-consumer_${project.scalaVersion}"), 'org.clojure:clojure:1.6.0',
+            'org.clojure:tools.nrepl:0.2.6', 'http-kit:http-kit:2.1.19'
+}
