@@ -25,6 +25,7 @@ repositories {
 }
 
 dependencies {
-    compile project(":pact-jvm-consumer_${project.scalaVersion}"), 'org.clojure:clojure:1.6.0',
-            'org.clojure:tools.nrepl:0.2.6', 'http-kit:http-kit:2.1.19'
+    compile project(":pact-jvm-consumer_${project.scalaVersion}"),
+            project(":pact-jvm-consumer-junit_${project.scalaVersion}"),
+            'org.clojure:clojure:1.6.0', 'org.clojure:tools.nrepl:0.2.6', 'http-kit:http-kit:2.1.19'
 }

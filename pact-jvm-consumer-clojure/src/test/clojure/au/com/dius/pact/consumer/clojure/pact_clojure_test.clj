@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [org.httpkit.client :as http]
             [au.com.dius.pact.consumer.clojure.pact-clojure :refer :all])
-  (:import [au.com.dius.pact.consumer ConsumerPactBuilder ConsumerPactTest]
+  (:import [au.com.dius.pact.consumer ConsumerPactBuilder ConsumerPactTest TestRun]
            [au.com.dius.pact.model MockProviderConfig]))
 
 (deftest test-test
