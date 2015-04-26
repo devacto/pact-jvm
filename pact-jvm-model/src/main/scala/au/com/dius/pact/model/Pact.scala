@@ -2,8 +2,7 @@ package au.com.dius.pact.model
 
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
-import scala.collection.{mutable, JavaConversions}
-import scala.util.matching.Regex
+import scala.collection.JavaConversions
 
 object Pact {
   def apply(provider: Provider, consumer: Consumer, interactions: java.util.List[Interaction]): Pact = {
@@ -22,7 +21,9 @@ object Pact {
     implicit val formats = DefaultFormats
     json.transformField {
       case ("provider_state", value) => ("providerState", value)
-      case ("body", value) => ("body", JString(pretty(value)))
+      case ("body", value) =>
+        if (value.isInstanceOf[JString]) ("body", value)
+        else ("body", JString(pretty(value)))
       case ("method", value) => ("method", JString(value.values.toString.toUpperCase))
     }.extract[Pact]
   }
@@ -104,7 +105,7 @@ trait HttpPart {
     }
   }
 
-  def jsonBody = mimeType == "application/json"
+  def jsonBody = mimeType.matches("application\\/.*json")
 
   def matchers: Option[Map[String, Map[String, String]]]
 
@@ -142,7 +143,7 @@ case class Request(method: String,
 
   private def cookieHeader = findHeaderByCaseInsensitiveKey("cookie")
 
-  private def findHeaderByCaseInsensitiveKey(key: String): Option[(String, String)] = headers.flatMap(_.find(_._1.toLowerCase == key.toLowerCase))
+  def findHeaderByCaseInsensitiveKey(key: String): Option[(String, String)] = headers.flatMap(_.find(_._1.toLowerCase == key.toLowerCase))
 
   override def toString: String = {
     s"\tmethod: $method\n\tpath: $path\n\tquery: $query\n\theaders: $headers\n\tmatchers: $matchers\n\tbody:\n$body"

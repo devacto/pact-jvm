@@ -1,5 +1,119 @@
 To generate the log, run `git log --pretty='* %h - %s (%an, %ad)'  TAGNAME..HEAD` replacing TAGNAME and HEAD as appropriate.
 
+# 2.1.13 - bugfix release
+
+* 55eb028 - fix defect where stateChangeUrl is automatically set by overridden url function #101 (Ronald Holshausen, Sun Mar 29 13:44:16 2015 +1100)
+* 3065910 - do not pretty print the request/response bodies when loading pact files if they are a string #102 (Ronald Holshausen, Fri Mar 27 13:05:06 2015 +1100)
+* 770bcd5 - Merge pull request #105 from rightmove/template-objects (Ronald Holshausen, Fri Mar 27 12:31:24 2015 +1100)
+* 8e0c7f1 - https://github.com/DiUS/pact-jvm/issues/104 - Added method to allow for templates to be used in arrays. (James Sawle, Wed Mar 25 18:17:20 2015 +0000)
+* c6516f3 - Merge pull request #103 from rightmove/master (Ronald Holshausen, Wed Mar 25 09:32:16 2015 +1100)
+* 97b189a - Allow PactDslJsonArray to be at the root of a response (James Sawle, Tue Mar 24 15:12:58 2015 +0000)
+* 46848ca - added example test to junit test examples #98 (Ronald Holshausen, Sat Mar 21 11:36:51 2015 +1100)
+* 9db509d - Merge pull request #99 from gthicks/accept-type-fix (Ronald Holshausen, Sat Mar 21 09:15:27 2015 +1100)
+* 86aaac5 - properly set accept type to ‘application/json’ (ghicks, Mon Mar 16 16:41:09 2015 -0700)
+* 0694216 - added JUnit consumer example from pact group thread (Ronald Holshausen, Mon Mar 9 13:26:24 2015 +1100)
+* d90ac06 - Merge pull request #95 from freewind/pact-request (Ronald Holshausen, Thu Mar 5 20:17:58 2015 +1100)
+* 2d25100 - #92 fix for No such property: statusCode (Ronald Holshausen, Thu Mar 5 19:36:34 2015 +1100)
+* 1c9a4f0 - reduced test stack size for travis build (Ronald Holshausen, Thu Mar 5 19:24:12 2015 +1100)
+* 898c1d8 - Turn an unnecessary `var` to `val` (Peng.Li, Thu Mar 5 11:23:53 2015 +0800)
+* 0c38d4a - Make 'findHeaderByCaseInsensitiveKey' public so user can use it to find a header easily. (Peng.Li, Thu Mar 5 11:23:31 2015 +0800)
+* 4bc0752 - Added link to spring MVC pact runner (Ronald Holshausen, Tue Mar 3 09:29:43 2015 +1100)
+* 72ba1fe - Merge pull request #94 from nicknovitski/patch-1 (Ronald Holshausen, Tue Mar 3 09:25:49 2015 +1100)
+* d9f9918 - README uses markdown to link to pact specification (Nick Novitski, Mon Mar 2 12:03:56 2015 -0800)
+* 3dcf510 - remove incorrect maven repo from gradle build (Ronald Holshausen, Mon Mar 2 12:45:15 2015 +1100)
+* 0e4905d - bump version (Ronald Holshausen, Sat Feb 28 16:12:02 2015 +1100)
+
+# 2.1.12 - bugfix release
+
+**NOTE: This version has a breaking change for matching paths with arrays. To bring it inline with
+the other pact implementations, matcher paths will use [] for array indices. Pact files generated
+with previous versions with matchers defined on arrays will not be applied.**
+
+* a13bac9 - fail the build if a state change request returns a failure status code (Ronald Holshausen, Sat Feb 28 15:33:23 2015 +1100)
+* 2eff45b - Updated the matcher paths to use [] for array elements to bring it in line with ruby and .net pact (Ronald Holshausen, Thu Feb 26 12:56:49 2015 +1100)
+* 4bafbff - Merge pull request #91 from hbakkum/master (Ronald Holshausen, Mon Feb 23 20:25:43 2015 +1100)
+* ad04842 - Fixed an issue in PactRule whereby a test with no pact verification would still get run as a pact consumer resulting in a NPE (Hayden Bakkum, Mon Feb 23 10:33:10 2015
+* bf6e29e - fix to get the SBT build passing #89 (Ronald Holshausen, Sat Feb 21 16:00:44 2015 +1100)
+* 222d50b - small correction to readme (Ronald Holshausen, Sat Feb 21 13:13:08 2015 +1100)
+* 7b9ce84 - Merge pull request #90 from georgepapas/master (Ronald Holshausen, Fri Feb 20 15:51:41 2015 +1100)
+* 59f1f8d - Ensures mock server is stopped when pact client code causes exception (George Papas, Fri Feb 20 15:01:33 2015 +1100)
+* 80fb905 - fixes to get build to pass on windows #81 (Ronald Holshausen, Sun Feb 8 19:56:17 2015 +1100)
+* d109bcd - update build instructions with note about SBT being unmaintained (Ronald Holshausen, Sun Feb 8 10:59:04 2015 +1100)
+* 924bee4 - bump version (Ronald Holshausen, Thu Feb 5 21:31:45 2015 +1100)
+
+# 2.1.11 - bugfix release
+
+* 247f5ac - port the state change request filter to the maven plugin (Ronald Holshausen, Thu Feb 5 16:32:04 2015 +1100)
+* 3f59fdb - Allow state change requests from the gradle plugin to be modified (Ronald Holshausen, Thu Feb 5 16:21:20 2015 +1100)
+* e952761 - Merge pull request #88 from BobFromHuddle/build_fixes (Ronald Holshausen, Sun Feb 1 09:24:51 2015 +1100)
+* 838921e - Fixed failure to load resources. Added JUnit as test dependency to matchers (Bob Gregory, Sat Jan 31 21:36:27 2015 +0000)
+* df9d70a - Adding matchers as dependency for test projects (Bob Gregory, Fri Jan 30 20:18:50 2015 +0000)
+* ff32941 - Merge pull request #87 from algra/fix-empty-body (Ronald Holshausen, Fri Jan 30 09:16:40 2015 +1100)
+* 886866d - Fixing the problem of evaluating mime type even if no body is specified. In this case "fallback" mime type "text/plain" is used, which makes test failing if provider
+* 92175d7 - bump version (Ronald Holshausen, Thu Jan 29 20:18:49 2015 +1100)
+
+# 2.1.10 - bugfix release
+
+* 973ef27 - do not compare the actual body if the body is left out of the pact file #85 (Ronald Holshausen, Thu Jan 29 19:29:15 2015 +1100)
+* 4a4aaba - Revert "when serialising a pact to JSON, always include a body attribute #85" (Ronald Holshausen, Thu Jan 29 13:39:53 2015 +1100)
+* 559a612 - Revert "when de-serialising a pact from JSON, set the body to None for empty, null and missing values #85" (Ronald Holshausen, Thu Jan 29 13:39:35 2015 +1100)
+* b44efd8 - Ignore the provider state if there is no state change URL #86 (Ronald Holshausen, Wed Jan 28 19:36:35 2015 +1100)
+* 650a824 - when de-serialising a pact from JSON, set the body to None for empty, null and missing values #85 (Ronald Holshausen, Wed Jan 28 13:35:49 2015 +1100)
+* b86095c - when serialising a pact to JSON, always include a body attribute #85 (Ronald Holshausen, Wed Jan 28 12:42:14 2015 +1100)
+* 7c62c7f - Merge pull request #84 from kolstae/master (Ronald Holshausen, Wed Jan 28 09:41:01 2015 +1100)
+* 102c762 - Changed ConsumerPactTest to not swallow exceptions (fieskols, Tue Jan 27 12:26:20 2015 +0100)
+* 129f4c3 - make PactSpec failure messages more meaningful #82 (Ronald Holshausen, Tue Jan 27 20:32:36 2015 +1100)
+* 4ddb281 - add accept headers when fetching pact files from a URL #83 (Ronald Holshausen, Sat Jan 24 10:01:57 2015 +1100)
+* 8499a94 - linked XML mimetypes to an XML body matcher #49 (Ronald Holshausen, Fri Jan 23 13:58:14 2015 +1100)
+* f51d92d - added debug logging to the matchers #82 (Ronald Holshausen, Fri Jan 23 13:20:29 2015 +1100)
+* 28fe123 - small refactor in prep for matching XML bodies #49 (Ronald Holshausen, Mon Jan 19 15:33:19 2015 +1100)
+* f9997e7 - refactored matching code and removed Java interfaces #80 (Ronald Holshausen, Sun Jan 18 17:40:48 2015 +1100)
+* aafe7b8 - very naive implementation of at least N matching of arrays #80 (Ronald Holshausen, Sun Jan 18 13:17:39 2015 +1100)
+* 8517c4b - Fix the readme section on filtering interactions for Gradle/Maven plugins (Ronald Holshausen, Mon Jan 12 12:58:36 2015 +1100)
+* 8361abc - fix parameter order #79 (Ronald Holshausen, Sat Jan 10 15:45:57 2015 +1100)
+* 2a08dc3 - add ability to maven plugin to verify pact files in a directory #79 (Ronald Holshausen, Sat Jan 10 15:40:05 2015 +1100)
+* 0126eaf - bump version (Ronald Holshausen, Sat Jan 10 13:47:03 2015 +1100)
+
+# 2.1.9 - fixes plus maven plugin
+
+* 5b52f97 - added maven central badge (Ronald Holshausen, Wed Jan 7 16:24:32 2015 +1100)                                                                                                                                                     
+* 5e12a98 - updated the link in the main readme to the maven plugin (Ronald Holshausen, Wed Jan 7 13:55:11 2015 +1100)                                                                                                                       
+* a473e64 - updated readme for the maven plugin (Ronald Holshausen, Wed Jan 7 13:48:33 2015 +1100)                                                                                                                                           
+* 52d5d6f - implement the pre-filter as a groovy script (Ronald Holshausen, Wed Jan 7 13:18:18 2015 +1100)                                                                                                                                   
+* d5303d4 - for maven to generate the plugin descriptor, all the dependent jars must be in the maven repo (Ronald Holshausen, Wed Dec 24 14:56:30 2014 +1100)                                                                                
+* 243e6b5 - exclude groovy from gradle plugin as it pulls in the gradle version of groovy (Ronald Holshausen, Wed Dec 24 14:43:15 2014 +1100)                                                                                                
+* b15e191 - Ported the code from the gradle plugin to the maven plugin (Ronald Holshausen, Wed Dec 24 14:25:00 2014 +1100)                                                                                                                   
+* 43a0ed9 - correct example matcher json fragment (Ronald Holshausen, Wed Dec 24 10:47:01 2014 +1100)                                                                                                                                        
+* 8fd1de5 - update READMEs about updating the directory pact files are written to #59 (Ronald Holshausen, Wed Dec 24 10:45:01 2014 +1100)                                                                                                    
+* 37b48dc - pact.rootDir system property now overides the directory pact files are written to #59 (Ronald Holshausen, Wed Dec 24 10:27:13 2014 +1100)                                                                                        
+* 35bdf9d - added start of a maven plugin (Ronald Holshausen, Mon Dec 22 20:20:21 2014 +1100)
+* bf34f1e - update build to latest 2.11 version of scala (Ronald Holshausen, Fri Dec 19 15:03:27 2014 +1100)
+* 1461003 - fix the matchers to handle null values #77 (Ronald Holshausen, Fri Dec 19 14:48:39 2014 +1100)
+* f71f7d3 - fix to allow mock server to respond to a request more than once #78 (Ronald Holshausen, Fri Dec 19 12:43:07 2014 +1100)
+* db53e6c - memory settings for travis build (Ronald Holshausen, Fri Dec 19 12:40:34 2014 +1100)
+* 852e4ad - bump version (Ronald Holshausen, Mon Dec 15 19:59:13 2014 +1100)
+
+# 2.1.8 - fixes plus pact junit rule
+
+**NOTE: This version has a breaking change for users of the gradle plugin with request filters.
+See [Modifying The Requests Before They Are Sent](https://github.com/DiUS/pact-jvm/tree/master/pact-jvm-provider-gradle#modifying-the-requests-before-they-are-sent)
+in the gradle plugin docs for more info.**
+
+* b6b836a - fixed link in readme (Ronald Holshausen, Mon Dec 15 19:31:19 2014 +1100)
+* be1f87d - updated readme to include docs about pact junit rule (Ronald Holshausen, Mon Dec 15 19:27:35 2014 +1100)
+* 118d5fa - fixed formatting in the readme (Ronald Holshausen, Mon Dec 15 16:14:34 2014 +1100)
+* f4d3287 - Switch from HttpBuilder to Apache HttpClient in gradle provider to be able to handle streaming responses (Ronald Holshausen, Mon Dec 15 15:34:27 2014 +1100)
+* 9d48373 - added a link to spring boot example (Ronald Holshausen, Sat Dec 13 09:21:54 2014 +1100)
+* 5c38ca6 - #74 - use a regexp when serialising pact file to detect extended json mimetypes like application/x-thrift+json (Ronald Holshausen, Thu Dec 11 20:14:18 2014 +1100)
+* 074c21e - use HttpBuilder instead of RestClient in the gradle plugin as the RestClient does not handle streaming responses (Ronald Holshausen, Thu Dec 11 10:18:53 2014 +1100)
+* b991a27 - get the PactRule working on JDK 6 (Ronald Holshausen, Tue Dec 9 19:33:36 2014 +1100)
+* dc9e5a1 - fix javadocs to get travis build going again (Ronald Holshausen, Tue Dec 9 19:24:49 2014 +1100)
+* c8a716a - Merge branch 'warmuuh-feature/junit-rule' (Ronald Holshausen, Tue Dec 9 19:16:07 2014 +1100)
+* 7a604c0 - #75 - added @Pact consumer rule (pmucha, Mon Dec 8 15:48:16 2014 +0100)
+* 948ecfc - #74 - handle application/xxx+json style mimetypes as json (Ronald Holshausen, Wed Dec 3 20:12:23 2014 +1100)
+* 823e6c8 - rename the second parameter in MockProviderConfig to be more meaningful (Ronald Holshausen, Wed Dec 3 09:10:53 2014 +1100)
+* 30088d7 - bump version (Ronald Holshausen, Tue Dec 2 20:35:00 2014 +1100)
+
 # 2.1.7 - bugfixes
 
 * 7112093 - updated the java DSL to include example values fir UUIDs and hex values (Ronald Holshausen, Tue Dec 2 17:35:09 2014 +1100)

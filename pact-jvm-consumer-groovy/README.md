@@ -202,9 +202,11 @@ This will return the following body:
 and add the following matchers:
 
 ```json
-"$.body.name": ["regex": "\\w+"],
-"$.body.surname": ["regex": "\\w+"], 
-"$.body.position": ["regex": "staff|contractor"]
+{
+    "$.body.name": {"regex": "\\w+"},
+    "$.body.surname": {"regex": "\\w+"},
+    "$.body.position": {"regex": "staff|contractor"}
+}
 ```
 
 #### DSL Methods
@@ -247,3 +249,17 @@ Defines a matcher that accepts ISO and SMTP timestamps. If the value is not prov
 * guid(String value = null)
 
 Defines a matcher that accepts UUIDs. A random one will be generated if no value is provided.
+
+## Changing the directory pact files are written to (2.1.9+)
+
+By default, pact files are written to `target/pacts`, but this can be overwritten with the `pact.rootDir` system property.
+This property needs to be set on the test JVM as most build tools will fork a new JVM to run the tests.
+
+For Gradle, add this to your build.gradle:
+
+```groovy
+test {
+    systemProperties['pact.rootDir'] = "$buildDir/pacts"
+}
+```
+

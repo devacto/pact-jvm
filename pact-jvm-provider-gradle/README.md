@@ -120,10 +120,13 @@ as a string (for the case when they haven't been defined yet).
 
 ## Modifying the requests before they are sent
 
+**NOTE on breaking change: Version 2.1.8+ uses Apache HttpClient instead of HttpBuilder so the closure will receive a
+HttpRequest object instead of a request Map.**
+
 Sometimes you may need to add things to the requests that can't be persisted in a pact file. Examples of these would
 be authentication tokens, which have a small life span. The Pact Gradle plugin provides a request filter that can be
-set to a closure on the provider that will be called before the request is made. This closure will receive a Map with
-all the requests attributes defined on it.
+set to a closure on the provider that will be called before the request is made. This closure will receive the HttpRequest
+prior to it being executed.
 
 ```groovy
 pact {
@@ -134,7 +137,7 @@ pact {
 
             requestFilter = { req ->
                 // Add an authorization header to each request
-                req.headers['Authorization] = 'OAUTH eyJhbGciOiJSUzI1NiIsImN0eSI6ImFw...'
+                req.addHeader('Authorization', 'OAUTH eyJhbGciOiJSUzI1NiIsImN0eSI6ImFw...')
             }
 
             hasPactWith('consumer1') {
@@ -162,7 +165,8 @@ The following project properties can be specified with `-Pproperty=value` on the
 ## Provider States
 
 For each provider you can specify a state change URL to use to switch the state of the provider. This URL will
-receive the providerState description from the pact file before each interaction via a POST.
+receive the providerState description from the pact file before each interaction via a POST. As for normal requests,
+a request filter (`stateChangeRequestFilter`) can also be set to manipulate the request before it is sent.
 
 ```
 pact {
@@ -175,6 +179,10 @@ pact {
                 pactFile = file('path/to/provider1-consumer1-pact.json')
                 stateChange = url('http://localhost:8001/tasks/pactStateChange')
                 stateChangeUsesBody = false // defaults to true
+                stateChangeRequestFilter = { req ->
+                    // Add an authorization header to each request
+                    req.addHeader('Authorization', 'OAUTH eyJhbGciOiJSUzI1NiIsImN0eSI6ImFw...')
+                }
             }
             
             // or
@@ -196,7 +204,7 @@ If the `stateChangeUsesBody` is not specified, or is set to true, then the provi
 
 ## Filtering the interactions that are verified
 
-You can filter the interactions that are run using two project properties: `pact.filter.consumers` and `pact.filter.interactions`.
+You can filter the interactions that are run using three project properties: `pact.filter.consumers`, `pact.filter.description` and `pact.filter.providerState`.
 Adding `-Ppact.filter.consumers=consumer1,consumer2` to the command line will only run the pact files for those
 consumers (consumer1 and consumer2). Adding `-Ppact.filter.description=a request for payment.*` will only run those interactions
 whose descriptions start with 'a request for payment'. `-Ppact.filter.providerState=.*payment` will match any interaction that
@@ -205,7 +213,7 @@ provider state.
 
 ## Publishing to the Gradle Community Portal
 
-To publish the plugin to the community portal requires first publishing the plugin to jcenter via the bintray plugin.
+To publish the plugin to the community portal:
 
-    $ gradle :pact-jvm-provider-gradle_2.11:bintrayUpload
-
+    $ gradle :pact-jvm-provider-gradle_2.11:publishPlugins
+    

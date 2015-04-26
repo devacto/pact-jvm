@@ -3,8 +3,9 @@ package au.com.dius.pact.provider.gradle
 import au.com.dius.pact.model.Pact
 import au.com.dius.pact.model.Pact$
 import au.com.dius.pact.model.Interaction
-import org.apache.http.Header
-import org.apache.http.HttpResponse
+import au.com.dius.pact.provider.groovysupport.ProviderClient
+import au.com.dius.pact.provider.groovysupport.ResponseComparison
+import org.apache.commons.lang3.StringUtils
 import org.fusesource.jansi.Ansi
 import org.fusesource.jansi.AnsiConsole
 import org.gradle.api.DefaultTask
@@ -31,7 +32,7 @@ class PactVerificationTask extends DefaultTask {
                 pact = Pact$.MODULE$.from(new FileInput(consumer.pactFile))
             } else if (consumer.pactFile instanceof URL) {
                 AnsiConsole.out().println(Ansi.ansi().a("  [from URL ${consumer.pactFile}]"))
-                pact = Pact$.MODULE$.from(new StreamInput(consumer.pactFile.newInputStream()))
+                pact = Pact$.MODULE$.from(new StreamInput(consumer.pactFile.newInputStream(requestProperties: ['Accept': 'application/json'])))
             } else {
                 throw new RuntimeException('You must specify the pactfile to execute (use pactFile = ...)')
             }
@@ -47,7 +48,7 @@ class PactVerificationTask extends DefaultTask {
                         ext.failures[interactionMessage] = stateChangeOk
                         stateChangeOk = false
                     } else {
-                        interactionMessage += " Given " + interaction.providerState.get()
+                        interactionMessage += " Given ${interaction.providerState.get()}"
                     }
                 }
 
@@ -58,14 +59,10 @@ class PactVerificationTask extends DefaultTask {
                         ProviderClient client = new ProviderClient(request: interaction.request(), provider: providerToVerify)
 
                         def expectedResponse = interaction.response()
-                        HttpResponse actualResponse = client.makeRequest()
+                        def actualResponse = client.makeRequest()
 
-                        def headers = [:]
-                        actualResponse.allHeaders.each { Header header ->
-                            headers[header.name] = header.value
-                        }
                         def comparison = ResponseComparison.compareResponse(expectedResponse, actualResponse,
-                                actualResponse.statusLine.statusCode, headers, actualResponse.data ?: [:])
+                                actualResponse.statusCode, actualResponse.headers, actualResponse.data)
 
                         AnsiConsole.out().println('    returns a response which')
                         displayMethodResult(failures, expectedResponse.status(), comparison.method,
@@ -169,11 +166,24 @@ class PactVerificationTask extends DefaultTask {
     def stateChange(String state, ConsumerInfo consumer) {
         AnsiConsole.out().println(Ansi.ansi().a('  Given ').bold().a(state).boldOff())
         try {
-            def client = new RESTClient(consumer.stateChange.toString())
-            if (consumer.stateChangeUsesBody) {
-                client.post(body: [state: state], requestContentType: 'application/json')
+
+            def url = consumer.stateChange
+            if (url == null || StringUtils.isBlank(url)) {
+                AnsiConsole.out().println(Ansi.ansi().a('         ').fg(Ansi.Color.YELLOW).a('WARNING: State Change ignored as there is no stateChange URL')
+                    .reset())
             } else {
-                client.post(query: [state: state])
+                ProviderClient client = new ProviderClient(provider: providerToVerify)
+                def response = client.makeStateChangeRequest(url, state, consumer.stateChangeUsesBody)
+                try {
+                    if (response.statusLine.statusCode >= 400) {
+                        AnsiConsole.out().println(Ansi.ansi().a('         ').fg(Ansi.Color.RED)
+                            .a('State Change Request Failed - ')
+                            .a(response.statusLine.toString()).reset())
+                        return 'State Change Request Failed - ' + response.statusLine.toString()
+                    }
+                } finally {
+                    response.close()
+                }
             }
             return true
         } catch (e) {

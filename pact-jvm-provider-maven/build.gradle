@@ -1,0 +1,42 @@
+apply plugin: 'maven-publish'
+
+dependencies {
+    compile project(":pact-jvm-provider_${project.scalaVersion}"), 'org.codehaus.groovy:groovy-all:2.3.7',
+        'org.apache.maven:maven-plugin-api:3.2.5', 'org.apache.maven.plugin-tools:maven-plugin-annotations:3.3'
+}
+
+import org.apache.tools.ant.taskdefs.condition.Os
+def isWindows() {
+    Os.isFamily(Os.FAMILY_WINDOWS)
+}
+
+task pluginDescriptor(type: Exec, dependsOn: [":pact-jvm-provider_${project.scalaVersion}:install",
+                                              ":pact-jvm-model_${project.scalaVersion}:install",
+                                              ":pact-jvm-matchers_${project.scalaVersion}:install"]) {
+    String mvn = 'mvn'
+    if (isWindows()) {
+        mvn = 'mvn.bat'
+    }
+    commandLine mvn, '-f', "${buildDir}/poms/pom.xml", '-e', '-B', 'org.apache.maven.plugins:maven-plugin-plugin:3.2:descriptor'
+    doFirst {
+        def pomFile = file("${buildDir}/poms/pom.xml")
+        def pom = install.repositories.mavenInstaller.pom
+        pom.packaging = 'maven-plugin'
+        pom.groupId = project.group
+        pom.artifactId = project.name
+        pom.version = version
+        pom.withXml {
+            def buildNode = asNode().appendNode('build')
+            buildNode.appendNode('directory', buildDir)
+            buildNode.appendNode('outputDirectory', "$buildDir/classes/main")
+        }
+        pom.writeTo( pomFile )
+    }
+    doLast {
+        final  pluginDescriptor = file("${project.compileGroovy.destinationDir}/META-INF/maven/plugin.xml")
+        assert pluginDescriptor.file, "[$pluginDescriptor.canonicalPath] was not created"
+    }
+}
+
+pluginDescriptor.shouldRunAfter project.jar
+project.jar.dependsOn pluginDescriptor

@@ -2,8 +2,9 @@ pact-jvm
 ========
 
 [![Build Status](https://travis-ci.org/DiUS/pact-jvm.svg?branch=master)](https://travis-ci.org/DiUS/pact-jvm)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/au.com.dius/pact-jvm-consumer_2.11/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/au.com.dius/pact-jvm-consumer_2.11)
 
-JVM implementation of the consumer driven contract library (pact)[https://github.com/bethesque/pact_specification]
+JVM implementation of the consumer driven contract library [pact](https://github.com/bethesque/pact_specification)
 
 From the [Ruby Pact website](https://github.com/realestate-com-au/pact):
 
@@ -21,6 +22,10 @@ From the [Ruby Pact website](https://github.com/realestate-com-au/pact):
 
 * Twitter: [@pact_up](https://twitter.com/pact_up)
 * Google users group: https://groups.google.com/forum/#!forum/pact-support
+
+## Links
+
+* For an example of using pact-jvm with spring boot, have a look at https://github.com/mstine/microservices-pact
 
 ## Note about artifact names and versions
 
@@ -49,7 +54,7 @@ You want to look at: [pact-jvm-consumer-groovy](pact-jvm-consumer-groovy) or [pa
 ### (Use Clojure I)
 
 Clojure can call out to Java, so have a look at [pact-jvm-consumer-junit](pact-jvm-consumer-junit). For an example
-look at [ExampleClojureConsumerPactTest.clj](pact-jvm-consumer-junit/src/test/java/au/com/dius/pact/consumer/ExampleClojureConsumerPactTest.clj).
+look at [ExampleClojureConsumerPactTest.clj](pact-jvm-consumer-junit/src/test/java/au/com/dius/pact/consumer/examples/ExampleClojureConsumerPactTest.clj).
 
 ### I Use some other jvm language or test framework
 
@@ -69,6 +74,14 @@ You want to look at: [pact sbt plugin](pact-jvm-provider-sbt)
 #### verify pacts with Gradle
 
 You want to look at: [pact gradle plugin](pact-jvm-provider-gradle)
+
+#### verify pacts with Maven [version 2.1.9+]
+
+You want to look at: [pact maven plugin](pact-jvm-provider-maven)
+
+#### verify pacts with a Spring MVC project
+
+Have a look at [Spring MVC Pact Test Runner](https://github.com/realestate-com-au/pact-jvm-provider-spring-mvc)
 
 #### I want to verify pacts but don't want to use sbt or gradle
 
@@ -102,38 +115,43 @@ Which is a project that aims at providing tooling to coordinate pact generation 
 
 ## Building the library
 
-Most of Pact-JVM is written in Scala. You can build it using SBT (the old way). We are moving the build to Gradle,
-so you can build it with that too.
+Most of Pact-JVM is written in Scala and is built with Gradle.
 
-#### Note on buiding pact JVM with Java 6 or 7
+#### To build the libraries:
+
+    $ ./gradlew clean build
+
+You can publish pact-jvm to your local maven repo using:
+
+    $ ./gradlew clean install
+
+To publish to a nexus repo:
+
+    $ ./gradlew clean check uploadArchives
+
+You will have to change the nexus URL and username/password in build.gradle and you must be added to the nexus project
+to be able to do this
+
+### Using SBT (the old way)
+
+The SBT project files still remain for those who want to build it with SBT. Note, however, that _this is unmaintained as
+there is no custodian for the SBT build_.
+
+#### Note on building pact JVM with Java 6 or 7
 
 Scala requires a lot of permgen space to compile. If you're using Java 6 or 7, use the following java and sbt options:
 
     export JAVA_OPTS='-Xmx2048m -XX:MaxPermSize=1024m -XX:PermSize=1024m'
     export SBT_OPTS='-Xmx2048m -XX:MaxPermSize=1024m -XX:PermSize=1024m'
 
-#### To build the libraries:
+To build the libraries:
 
     $ sbt clean test install
-
-or
-
-    $ ./gradlew clean build
 
 You can publish pacts to your local maven repo using:
 
     $ sbt clean test publishLocal
 
-or
-
-    $ ~/.gradlew clean install
-
 To publish to a nexus repo, change the url in project/Build.scala then run:
 
     $ sbt clean test publish
-
-or
-
-    $ ./gradlew clean check uploadArchives
-
-You will need to be added to the nexus project to be able to do this.

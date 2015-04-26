@@ -4,10 +4,10 @@ import com.typesafe.sbt.pgp.PgpKeys._
 
 object BuildSettings {
     val publishSettings = Seq(
-        version := "2.1.8",
+        version := "2.1.14",
         organization := "au.com.dius",
         scalaVersion := "2.10.4",
-        crossScalaVersions := Seq("2.10.4", "2.11.2"),
+        crossScalaVersions := Seq("2.10.4", "2.11.4"),
 
         publishMavenStyle := true,
         // when playing around with a local install of nexus use this:
@@ -105,7 +105,7 @@ object RootBuild extends Build {
 
     lazy val provider = p("pact-jvm-provider").dependsOn(model).dependsOn(matchers)
 
-    lazy val providerSpecs2 = p("pact-jvm-provider-specs2").dependsOn(model)
+    lazy val providerSpecs2 = p("pact-jvm-provider-specs2").dependsOn(model).dependsOn(matchers)
 
     lazy val plugin = p("pact-jvm-provider-sbt").dependsOn(provider)
 
@@ -113,6 +113,6 @@ object RootBuild extends Build {
 
     lazy val server = p("pact-jvm-server").dependsOn(model).dependsOn(consumer)
 
-    lazy val pactSpecification = p("pact-specification-test", commonSettings ++ skipPublish).dependsOn(model)
+    lazy val pactSpecification = p("pact-specification-test", commonSettings ++ skipPublish).dependsOn(model).dependsOn(matchers)
 
 }

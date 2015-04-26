@@ -1,7 +1,6 @@
 package au.com.dius.pact.model
 
-import au.com.dius.pact.matchers.{Matchers, MismatchFactory, JsonBodyMatcher, BodyMatcher}
-import au.com.dius.pact.model.JsonDiff.DiffConfig
+import au.com.dius.pact.matchers._
 import au.com.dius.pact.model.RequestPartMismatch._
 import au.com.dius.pact.model.ResponsePartMismatch._
 
@@ -9,7 +8,10 @@ import scala.collection.immutable.TreeMap
 import scala.collection.mutable
 
 object PactConfig {
-    var bodyMatchers = mutable.HashMap[String, BodyMatcher]("application/.*json" -> new JsonBodyMatcher())
+    var bodyMatchers = mutable.HashMap[String, BodyMatcher](
+      "application/.*xml" -> new XmlBodyMatcher(),
+      "application/.*json" -> new JsonBodyMatcher()
+    )
 }
 
 trait SharedMismatch {
@@ -42,12 +44,13 @@ case class MethodMismatch(expected: Method, actual: Method) extends RequestPartM
 case class QueryMismatch(expected: Query, actual: Query) extends RequestPartMismatch
 
 object BodyMismatchFactory extends MismatchFactory[BodyMismatch] {
-  def create(expected: scala.Any, actual: scala.Any, message: String, path: String) = BodyMismatch(expected, actual, Some(message), path)
+  def create(expected: scala.Any, actual: scala.Any, message: String, path: Seq[String]) =
+    BodyMismatch(expected, actual, Some(message), path.mkString("."))
 }
 
 object PathMismatchFactory extends MismatchFactory[PathMismatch] {
-  def create(expected: scala.Any, actual: scala.Any, message: String, path: String) = PathMismatch(expected.toString,
-    actual.toString, Some(message))
+  def create(expected: scala.Any, actual: scala.Any, message: String, path: Seq[String]) =
+    PathMismatch(expected.toString, actual.toString, Some(message))
 }
 
 object Matching {
@@ -97,22 +100,22 @@ object Matching {
         result.get._2.matchBody(expected, actual, diffConfig)
       } else {
         (expected.body, actual.body) match {
-          case (None, None) => List()
-          case (None, b) => if(diffConfig.structural) { List() } else { List(BodyMismatch(None, b)) }
+          case (None, _) => List()
           case (a, None) => List(BodyMismatch(a, None))
           case (a, b) => if (a == b) List() else List(BodyMismatch(a, b))
         }
       }
     } else {
-      List(BodyTypeMismatch(expected.mimeType, actual.mimeType))
+      if (expected.body == None) List()
+      else List(BodyTypeMismatch(expected.mimeType, actual.mimeType))
     }
   }
 
   def matchPath(expected: Request, actual: Request): Option[PathMismatch] = {
     val pathFilter = "http[s]*://([^/]*)"
     val replacedActual = actual.path.replaceFirst(pathFilter, "")
-    if (Matchers.matcherDefined("$.path", expected.matchers)) {
-      val mismatch = Matchers.domatch[PathMismatch](expected.matchers.get("$.path"), "$.path", expected.path,
+    if (Matchers.matcherDefined(Seq("$", "path"), expected.matchers)) {
+      val mismatch = Matchers.domatch[PathMismatch](expected.matchers, Seq("$", "path"), expected.path,
         replacedActual, PathMismatchFactory)
       mismatch.headOption
     }

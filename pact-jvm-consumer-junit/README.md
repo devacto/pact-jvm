@@ -78,6 +78,48 @@ public class ExampleJavaConsumerPactTest extends ConsumerPactTest {
 }
 ```
 
+### Using the Pact JUnit Rule
+
+Thanks to [@warmuuh](https://github.com/warmuuh) we have a JUnit rule that simplifies running Pact consumer tests. To use it, create a test class
+and then add the rule:
+
+#### 1. Add the Pact Rule to your test class.
+
+```java
+    @Rule
+    public PactRule rule = new PactRule("localhost", 8080, this);
+```
+
+#### 2. Annotate a method with Pact that returns a pact fragment
+
+```java
+    @Pact(state="test state", provider="test_provider", consumer="test_consumer")
+    public PactFragment createFragment(PactDslWithState builder) {
+        return builder
+            .uponReceiving("ExampleJavaConsumerPactRuleTest test interaction")
+                .path("/")
+                .method("GET")
+            .willRespondWith()
+                .status(200)
+                .body("{\"responsetest\": true}")
+            .toFragment();
+    }
+```
+
+#### 3. Annotate your test method with PactVerification to have it run in the context of a mock server setup with the appropriate pact from step 2
+
+```java
+    @Test
+    @PactVerification("test state")
+    public void runTest() {
+        Map expectedResponse = new HashMap();
+        expectedResponse.put("responsetest", true);
+        assertEquals(new ConsumerClient("http://localhost:8080").get("/"), expectedResponse);
+    }
+```
+
+For an example, have a look at [ExampleJavaConsumerPactRuleTest](src/test/java/au/com/dius/pact/consumer/examples/ExampleJavaConsumerPactRuleTest.java)
+
 ### Using the Pact DSL directly
 
 Sometimes it is not convenient to use the ConsumerPactTest as it only allows one test per test class. The DSL can be
@@ -205,6 +247,8 @@ For example:
         .body("{\"hello\": \"harry\"}")
 ```
 
+##
+
 ## Debugging pact failures
 
 When the test runs, Pact will start a mock provider that will listen for requests and match them against the expectations
@@ -212,3 +256,48 @@ you setup in `createFragment`. If the request does not match, it will return a 5
 
 Each request received and the generated response is logged using [SLF4J](http://www.slf4j.org/). Just enable debug level
 logging for au.com.dius.pact.consumer.UnfilteredMockProvider. Most failures tend to be mismatched headers or bodies.
+
+## Changing the directory pact files are written to (2.1.9+)
+
+By default, pact files are written to `target/pacts`, but this can be overwritten with the `pact.rootDir` system property.
+This property needs to be set on the test JVM as most build tools will fork a new JVM to run the tests.
+
+For Gradle, add this to your build.gradle:
+
+```groovy
+test {
+    systemProperties['pact.rootDir'] = "$buildDir/pacts"
+}
+```
+
+For maven, use the systemPropertyVariables configuration:
+
+```xml
+<project>
+  [...]
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.18</version>
+        <configuration>
+          <systemPropertyVariables>
+            <pact.rootDir>some/other/directory</pact.rootDir>
+            <buildDirectory>${project.build.directory}</buildDirectory>
+            [...]
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  [...]
+</project>
+```
+
+For SBT:
+
+```scala
+fork in Test := true,
+javaOptions in Test := Seq("-Dpact.rootDir=some/other/directory")
+```
